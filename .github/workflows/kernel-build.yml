@@ -171,7 +171,20 @@ jobs:
           git submodule status
           echo "🎯 Kernel branch:"
           cd kernel && git branch -v && cd ..
-
+          
+      - name: Configure Kernel for Nethunter
+        run: |
+          cd kernel
+          make defconfig
+          echo "CONFIG_NETHUNTER=y" >> .config  # Ensure Nethunter config is added
+          make olddefconfig  # Apply the configuration
+          
+      - name: Apply Nethunter kernel patches 
+        run: |
+          git remote add nethunter https://gitlab.com/kalilinux/nethunter/build-scripts/kali-nethunter-kernels.git
+          git fetch nethunter
+          git cherry-pick 0abec29b06a2bc593b02c183e8f983a4d852efdb 
+      
       - name: Clean Kernel Directory Properly
         run: |
           echo "🧹 Properly cleaning kernel directory..."
