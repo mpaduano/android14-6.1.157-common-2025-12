@@ -190,11 +190,10 @@ jobs:
           echo "CONFIG_NETHUNTER=y" >> .config  # Ensure Nethunter config is added
           make olddefconfig  # Apply the configuration
           
-      - name: Apply Nethunter kernel patches 
+      - name: Apply all Nethunter patches
+        if: matrix.variant == 'nethunter'
         run: |
-          git remote add nethunter https://gitlab.com/kalilinux/nethunter/build-scripts/kali-nethunter-kernels.git
-          git fetch nethunter
-          git cherry-pick 0abec29b06a2bc593b02c183e8f983a4d852efdb 
+          git apply .https://gitlab.com/kalilinux/nethunter/build-scripts/kali-nethunter-kernel-builder/-/tree/main/patches/4.14?ref_type=heads/*.patch
       
       - name: Clean Kernel Directory Properly
         run: |
