@@ -15,6 +15,7 @@ on:
           - mksu
           - sukisu
           - next
+          - nethunter
       disable_susfs:
         description: 'Disable SuSFS features'
         required: false
