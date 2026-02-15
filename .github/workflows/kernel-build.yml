@@ -193,7 +193,9 @@ jobs:
       - name: Apply all Nethunter patches
         if: matrix.variant == 'nethunter'
         run: |
-          git apply .https://gitlab.com/kalilinux/nethunter/build-scripts/kali-nethunter-kernel-builder/-/tree/main/patches/4.14?ref_type=heads/*.patch
+          for patch in https://gitlab.com/kalilinux/nethunter/build-scripts/kali-nethunter-kernel-builder/-/tree/main/patches/4.14?ref_type=heads/*.patch; do
+           git apply "$patch"
+          done
       
       - name: Clean Kernel Directory Properly
         run: |
