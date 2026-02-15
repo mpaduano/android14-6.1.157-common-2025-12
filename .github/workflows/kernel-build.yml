@@ -103,7 +103,12 @@ jobs:
             echo "matrix={\"variant\":[\"$VARIANT\"]}" >> $GITHUB_OUTPUT
             echo "🎯 Building single variant: $VARIANT"
           fi
-
+          
+      - name: Apply Nethunter-specific patches for nethunter variant
+        if: matrix.variant == 'nethunter'
+        run: |
+          git apply /path/to/nethunter/patches/nethunter.patch
+          
       - name: Set Build Config
         id: config
         run: |
@@ -124,7 +129,12 @@ jobs:
           echo "enable_susfs=$ENABLE_SUSFS" >> $GITHUB_OUTPUT
           echo "force_clean=$FORCE_CLEAN" >> $GITHUB_OUTPUT
           echo "create_release=$CREATE_RELEASE" >> $GITHUB_OUTPUT
-
+          
+      - name: Build Nethunter kernel
+        if: matrix.variant == 'nethunter'
+        run: |
+          make -j$(nproc) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-
+          
   build:
     needs: setup
     runs-on: [self-hosted, Linux, X64]
@@ -1370,6 +1380,13 @@ jobs:
           
           echo "BUILD_DURATION=$BUILD_DURATION" >> $GITHUB_ENV
 
+      - name: Release Nethunter Kernel
+        if: matrix.variant == 'nethunter'
+        uses: actions/upload-artifact@v4
+        with:
+          name: nethunter-kernel-${{ github.run_number }}
+          path: kernel/AnyKernel3/nethunter-kernel.zip 
+          
       - name: Download All Artifacts
         uses: actions/download-artifact@v4
         with:
